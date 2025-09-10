@@ -234,8 +234,9 @@ player_should_move_left(void* arg)
 }
 
 $private bool
-player_should_move_right(TransformComponent* ptc)
+player_should_move_right(void* arg)
 {
+    TransformComponent* ptc = (TransformComponent*)arg;
     return (ptc->position.x < 4 && (map[ptc->position.y - 3][ptc->position.x + 1] == ' ' && map[ptc->position.y - 2][ptc->position.x + 1] == ' '))
         || (ptc->position.x == 1 && (map[ptc->position.y - 3][ptc->position.x] != ' ' && map[ptc->position.y - 3][ptc->position.x + 1] != ' '));
 }
