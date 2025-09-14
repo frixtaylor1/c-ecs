@@ -5,7 +5,7 @@
 $public void 
 em_initialize(EntityManager* em, uint32_t nbEntities)
 {
-    m_initialize(&em->allocator, nbEntities * sizeof(Entity) * 4);
+    m_initialize(&em->allocator, nbEntities * sizeof(Entity) + 4);
     em->entities = m_alloc(&em->allocator, nbEntities * sizeof(Entity));
     em->capacity = nbEntities;
     em->length = 0;

@@ -1,5 +1,6 @@
 #include "components_container.h"
 #include <string.h>
+#include "spinlock.h"
 
 #define MAX_COMPONENT_PER_STORAGE 100
 #define SIZE_AVERAGE_COMPONENT 100
@@ -11,10 +12,16 @@ static const size_t cmp_sizes[CMP_MAX] = {
     [CMP_PlayerFSMComponent] = sizeof(PlayerFSMComponent)
 };
 
+$private size_t get_components_size_average() {
+    size_t avg = 0;
+    for (int idx = 0; idx < CMP_MAX; idx++, avg += cmp_sizes[idx]);
+    return avg / CMP_MAX;
+}
+
 $public void
 cc_initialize(ComponentsContainer* cc, uint32_t capacity)
 {
-    m_initialize(&cc->allocator, CMP_MAX * capacity * SIZE_AVERAGE_COMPONENT);
+    m_initialize(&cc->allocator, CMP_MAX * capacity * get_components_size_average());
 
     for (int cmp = 0; cmp < CMP_MAX; cmp++) {
         if (cmp_sizes[cmp] > 0) {
@@ -22,6 +29,8 @@ cc_initialize(ComponentsContainer* cc, uint32_t capacity)
         } else {
             cc->storages[cmp] = NULL;
         }
+
+        spinlock_init(&cc->locks[cmp]);
     }
 }
 
@@ -49,6 +58,8 @@ $public void
 cc_add_component(ComponentsContainer* cc, Entity* e, ComponentType cmp,
     void* component)
 {
+    spinlock_acquire(&cc->locks[cmp]);
+
     switch (cmp) {
     case CMP_RenderComponent:
         CC_ADD(cc, e, RenderComponent, (RenderComponent*)component);
@@ -64,4 +75,6 @@ cc_add_component(ComponentsContainer* cc, Entity* e, ComponentType cmp,
         break;
     }
     e->components |= CMP_MASK(cmp);
+
+    spinlock_release(&cc->locks[cmp]);
 }

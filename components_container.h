@@ -4,11 +4,13 @@
 #include "alloc.h"
 #include "common.h"
 #include "components.h"
+#include "spinlock.h"
 #include "entity.h"
 
 typedef struct ComponentsContainer {
     PoolAllocator allocator;
     void* storages[CMP_MAX];
+    Spinlock locks[CMP_MAX];
 } ComponentsContainer;
 
 /// Callback used for processing components of entities

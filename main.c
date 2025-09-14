@@ -79,7 +79,7 @@ update_enemy(Entity* e)
 
     tc->position.y += pc->velocity;
 
-    if (tc->position.y >= WINDOW_HEIGHT - 1) {
+    if (tc->position.y >= WINDOW_HEIGHT) {
         Entity* player = em_get_entity_with_tag(&em, TAG_PLAYER);
         TransformComponent* ptc = cc_get_component(&cc, player, CMP_TransformComponent);
 
@@ -268,23 +268,23 @@ initialize_player()
         &cc, player, CMP_PlayerFSMComponent,
         &(PlayerFSMComponent) {
             .currentCondition = PLAYER_CONDITION_ENEMY_AHEAD,
-            .currentAction = PLAYER_STATE_HOLD,
+            .currentAction    = PLAYER_STATE_HOLD,
             .tree = {
                 .tree = {
-                    [0] = { .is_condition = true, .index = PLAYER_CONDITION_ENEMY_AHEAD, .yes_index = 1, .no_index = 2 },
-                    [1] = { .is_condition = true, .index = PLAYER_CONDITION_SHOULD_MOVE_LEFT, .yes_index = 3, .no_index = 5 },
-                    [2] = { .is_condition = false, .index = PLAYER_STATE_HOLD },
-                    [3] = { .is_condition = false, .index = PLAYER_STATE_MOVE_LEFT },
-                    [4] = { .is_condition = false, .index = PLAYER_STATE_MOVE_RIGHT },
-                    [5] = { .is_condition = true, .index = PLAYER_CONDITION_SHOULD_MOVE_RIGHT, .yes_index = 4, .no_index = 3 } } },
+                    [0] = { .is_condition = true,  .index = PLAYER_CONDITION_ENEMY_AHEAD,       .yes_index = 1, .no_index = 2 },
+                    [1] = { .is_condition = true,  .index = PLAYER_CONDITION_SHOULD_MOVE_LEFT,  .yes_index = 3, .no_index = 5 },
+                    [2] = { .is_condition = false, .index = PLAYER_STATE_HOLD                                                 },
+                    [3] = { .is_condition = false, .index = PLAYER_STATE_MOVE_LEFT                                            },
+                    [4] = { .is_condition = false, .index = PLAYER_STATE_MOVE_RIGHT                                           },
+                    [5] = { .is_condition = true,  .index = PLAYER_CONDITION_SHOULD_MOVE_RIGHT, .yes_index = 4, .no_index = 3 } } },
             .conditions = {
-                [PLAYER_CONDITION_ENEMY_AHEAD] = &enemy_ahead,
-                [PLAYER_CONDITION_SHOULD_MOVE_LEFT] = &player_should_move_left,
+                [PLAYER_CONDITION_ENEMY_AHEAD]       = &enemy_ahead,
+                [PLAYER_CONDITION_SHOULD_MOVE_LEFT]  = &player_should_move_left,
                 [PLAYER_CONDITION_SHOULD_MOVE_RIGHT] = &player_should_move_right,
             },
             .actions = {
-                [PLAYER_STATE_HOLD] = &on_player_hold,
-                [PLAYER_STATE_MOVE_LEFT] = &on_player_move_left,
+                [PLAYER_STATE_HOLD]       = &on_player_hold,
+                [PLAYER_STATE_MOVE_LEFT]  = &on_player_move_left,
                 [PLAYER_STATE_MOVE_RIGHT] = &on_player_move_right,
             } });
 }
